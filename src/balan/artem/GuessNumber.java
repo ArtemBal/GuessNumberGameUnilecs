@@ -1,5 +1,6 @@
 package balan.artem;
 
+import java.util.Arrays;
 import java.util.Random;
 import java.util.Scanner;
 
@@ -20,23 +21,28 @@ public class GuessNumber {
     }
 
     public static int[] check(int[] rand, int[] input) {
+        int[] checkRand = Arrays.copyOf(rand, rand.length);
         int[] result = new int[]{0, 0};
         boolean flag;
-        for (int i = 0; i < rand.length; i++){
+        int pos;
+        for (int i = 0; i < checkRand.length; i++){
             flag = false;
+            pos = -1;
             for (int j = 0; j < input.length; j++) {
-                if(rand[i] == input[j]) {
+                if(input[i] == checkRand[j]) {
                     if(i == j) {
                         result[0]++;
                         if(flag) result[1]--;
+                        checkRand[j] = -1;
                         break;
                     }
-                    if(flag) {
-                        continue;
+                    if(!flag) {
+                        result[1]++;
+                        pos = j;
+                        flag = true;
                     }
-                    result[1]++;
-                    flag = true;
                 }
+                if(pos >= 0) checkRand[pos] = -1;
             }
         }
         return result;
@@ -56,9 +62,9 @@ public class GuessNumber {
         Scanner scanner = new Scanner(System.in);
         int[] inputArray;
         int[] result;
-        System.out.println("-------------------" + randomInt + "-------------------");
+        boolean win = false;
         for (int i = 0; i < 10; i++){
-            System.out.println(i + " попытка:");
+            System.out.println(i + 1 + " попытка:");
             int in = scanner.nextInt();
             if(in > 999 || in <= 99) {
                 System.out.println("Ты тупой? Сказали же введите ТРЕХЗНАЧНОЕ число");
@@ -69,10 +75,14 @@ public class GuessNumber {
             result = check(randArray, inputArray);
             if(result[0] == 3) {
                 System.out.println("Правильно!");
+                win = true;
                 break;
             }
             System.out.println(result[0] + "-Right | " + result[1] + "-Almost");
         }
-
+        scanner.close();
+        if(!win) {
+            System.out.println("Вы проиграли. Правильный ответ - " + randomInt);
+        }
     }
 }
